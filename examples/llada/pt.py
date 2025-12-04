@@ -44,6 +44,8 @@ class ModelArguments(dllm.utils.ModelArguments):
 @dataclass
 class DataArguments(dllm.utils.DataArguments):
     dataset_args: str = "mlfoundations/dclm-baseline-1.0[train:10_000_000,test:10_000]"
+    dataset_name: str | None = None
+    dataset_config_name: str | None = None
     text_field: str = "text"
     streaming: bool = True
     drop_tail: bool = True
@@ -67,7 +69,7 @@ class DataArguments(dllm.utils.DataArguments):
 @dataclass
 class TrainingArguments(dllm.utils.TrainingArguments):
     output_dir: str = (
-        "models/LLaDA-8B-PT/dclm-baseline-1.0[train:10_000_000,test:10_000]"
+        "models/llada-small-portuguese-PT"
     )
     learning_rate: float = 3e-4
     max_steps: int = 2_000
@@ -87,6 +89,13 @@ def train():
     if data_args.streaming: training_args.accelerator_config.dispatch_batches = False
     dllm.utils.print_args_main(model_args, data_args, training_args)
     dllm.utils.initial_training_setup(model_args, data_args, training_args)
+
+    # If explicit dataset name/config are provided, override dataset_args accordingly.
+    if getattr(data_args, "dataset_name", None):
+        spec = data_args.dataset_name
+        if getattr(data_args, "dataset_config_name", None):
+            spec = f"{spec}[name:{data_args.dataset_config_name}]"
+        data_args.dataset_args = spec
 
     # ----- Model ------------------------------------------------------------------
     # initialize model weights from scratch
@@ -116,7 +125,7 @@ def train():
                 insert_eos=data_args.insert_eos,
                 drop_tail=data_args.drop_tail),
             batched=True,
-            num_proc=None if data_args.streaming else data_args.num_proc,
+            # num_proc=None if data_args.streaming else data_args.num_proc,
             remove_columns=dataset["train"].column_names,
         )
         if data_args.streaming: dataset = dataset.shuffle(seed=training_args.seed)

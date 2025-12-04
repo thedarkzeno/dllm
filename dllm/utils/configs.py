@@ -65,3 +65,18 @@ class TrainingArguments(transformers.TrainingArguments):
     eval_steps: float = 0.25
     save_steps: float = 0.25
     save_only_model: bool = True
+    # ===== REPA (Representation Alignment) options =====
+    repa_enable: bool = False
+    repa_teacher_name_or_path: str | None = None
+    repa_teacher_pooling: str = "mean"  # "mean" | "cls" | "last_token"
+    repa_target_layer: int = -1  # -1 for last_hidden_state
+    repa_align_on: str = "clean"  # "clean" | "noised"
+    repa_projection_type: str = "linear"  # "linear" | "mlp"
+    repa_loss_type: str = "cosine"  # "cosine" | "mse"
+    repa_loss_weight: float = 0.1
+    repa_teacher_freeze: bool = True
+    repa_temperature: float = 0.07
+    repa_normalize: bool = False
+    # Placement and precision for teacher encoder
+    repa_teacher_device: str = "auto"  # "auto" | "student" | "cpu" | "cuda" | "cuda:0" | ...
+    repa_teacher_dtype: str | None = None  # e.g., "bfloat16", "float16", "float32"

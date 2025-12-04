@@ -1,0 +1,24 @@
+python examples/llada/pt.py \
+    --model_name_or_path "models/llada-small-portuguese" \
+    --num_train_epochs 4 \
+    --max_length 512 \
+    --dataset_name "HuggingFaceFW/fineweb-2" \
+    --dataset_config_name "por_Latn" \
+    --per_device_train_batch_size 8 \
+    --gradient_accumulation_steps 64 \
+    --learning_rate 3e-4 \
+    --max_steps 2000 \
+    --save_steps 0.05 \
+    --eval_steps 0.05 \
+    --output_dir "models/llada-small-portuguese-PT" \
+    --repa_enable True \
+    --repa_teacher_name_or_path "Qwen/Qwen2.5-0.5B" \
+    --repa_teacher_pooling "mean" \
+    --repa_target_layer 11 \
+    --repa_align_on "clean" \
+    --repa_projection_type "linear" \
+    --repa_loss_type "cosine" \
+    --repa_loss_weight 1.0 \
+    --repa_teacher_freeze True \
+    --repa_temperature 0.07 \
+    --repa_normalize False
